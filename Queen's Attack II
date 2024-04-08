@@ -1,0 +1,87 @@
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+
+#
+# Complete the 'queensAttack' function below.
+#
+# The function is expected to return an INTEGER.
+# The function accepts following parameters:
+#  1. INTEGER n
+#  2. INTEGER k
+#  3. INTEGER r_q
+#  4. INTEGER c_q
+#  5. 2D_INTEGER_ARRAY obstacles
+#
+
+def queensAttack(n, k, r_q, c_q, obstacles):
+    # count of attacks without any obstacles
+    attacks = (n-1)*2 + min(r_q-1, n-c_q) + min(n-r_q, n-c_q) + min(r_q-1, c_q-1) + min(n-r_q, c_q-1)
+    # values to delete for each direction
+    right, left, up, down, right_up, left_up, right_down, left_down = ([0] for i in range(8))
+    
+    for ob in obstacles:
+        r_ob = ob[0]
+        c_ob = ob[1]
+             
+        # right-left
+        if r_ob == r_q:
+            if c_ob > c_q:
+                right.append((n-c_q) - (abs(c_ob - c_q) - 1))
+            else:
+                left.append((c_q-1) - (abs(c_ob - c_q) - 1))
+         
+        # down-up
+        elif c_ob == c_q:
+            if r_ob > r_q:
+                down.append((n-r_q) - (abs(r_ob - r_q) - 1))
+            else:
+                up.append((r_q-1) - (abs(r_ob - r_q) - 1))
+                
+        # right up- left down
+        elif r_ob - c_ob == r_q -c_q:
+            if r_ob > r_q:
+                right_up.append(min(n-r_q, n-c_q) - (abs(r_ob - r_q) - 1))
+            else:
+                left_down.append(min(r_q-1, c_q-1) - (abs(r_ob - r_q) - 1))
+                
+        # left up - right down
+        elif abs(r_ob-r_q) == abs(c_ob - c_q):
+            if r_ob >r_q:
+                right_down.append(min(n-r_q, c_q -1)- (abs(r_ob - r_q) - 1))
+            else:
+                left_up.append(min(r_q -1, n-c_q)- (abs(r_ob - r_q) - 1))
+        
+    attacks_to_delete = list(map(max, [up, down, right, left, right_up, right_down, left_up, left_down]))
+    return attacks-sum(attacks_to_delete)
+    
+
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    first_multiple_input = input().rstrip().split()
+
+    n = int(first_multiple_input[0])
+
+    k = int(first_multiple_input[1])
+
+    second_multiple_input = input().rstrip().split()
+
+    r_q = int(second_multiple_input[0])
+
+    c_q = int(second_multiple_input[1])
+
+    obstacles = []
+
+    for _ in range(k):
+        obstacles.append(list(map(int, input().rstrip().split())))
+
+    result = queensAttack(n, k, r_q, c_q, obstacles)
+
+    fptr.write(str(result) + '\n')
+
+    fptr.close()
