@@ -1,0 +1,76 @@
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+
+#
+# Complete the 'biggerIsGreater' function below.
+#
+# The function is expected to return a STRING.
+# The function accepts STRING w as parameter.
+#
+
+def biggerIsGreater(w):
+     # find longest non increasing suffix
+    nis = [[-1, w[-1]]]
+    i = 0
+    while i < len(w):
+        try:
+            if w[-2 - i] >= w[-1 - i]:
+                nis.append([-2 - i, w[-2 - i]])
+                i += 1
+            else:
+                # find pivot
+                pivot = [-2 - i, w[-2 - i]]
+                break
+        except IndexError:
+            return "no answer"
+       
+    
+    # find rightmost successor of pivot in the suffix
+    nis = nis[::-1]
+    rightmost = []
+    for key, value in nis:
+        if value > pivot[1]:
+            rightmost.append([key, value])
+    rightmost.sort(key=lambda x: x[1])
+    successor = rightmost[0]
+    successor_list = []
+    for key, value in rightmost:
+        if value == successor[1]:
+            successor_list.append([key, value])
+    successor = successor_list[-1]
+    
+    # swap the pivot and rightmost successor
+    nis_str = ""
+    for key, value in nis:
+        nis_str += value
+    nis_list = list(nis_str)
+    nis_list[successor[0]] = pivot[1]
+    nis_str = "".join(nis_list)
+    prefix = w[:-len(nis)-1] + successor[1]
+    
+    # reverse the suffix
+    suffix = nis_str[::-1]
+
+    return prefix + suffix
+
+   
+    
+
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    T = int(input().strip())
+
+    for T_itr in range(T):
+        w = input()
+
+        result = biggerIsGreater(w)
+
+        fptr.write(result + '\n')
+
+    fptr.close()
